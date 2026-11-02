@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Agent Regression Lab",
+    "description": "Record sessions as runs and compare two of them side by side: tool sequence, arguments, outcomes, and usage, so behavior drift is visible."
+  }
+}
