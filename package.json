@@ -1,10 +1,13 @@
 {
   "name": "dsh-agent-lab",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "Agent 行为回归实验台：把会话录成运行记录，并排对比两次运行的工具序列、参数、结果与用量",
+  "description": "Agent 行为回归实验台：录制/重放会话运行，按任务×变体聚合矩阵，并用任务断言与 CI 退出码做回归门禁",
   "type": "module",
   "main": "index.js",
+  "bin": {
+    "agent-lab-check": "./bin/agent-lab-check.mjs"
+  },
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
@@ -14,6 +17,7 @@
   "files": [
     "index.js",
     "client.js",
+    "bin",
     "lib",
     "cordis.patch.yml",
     "locale/*.json",
@@ -22,7 +26,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "node test/compare.test.mjs"
+    "test": "node --test"
   },
   "dsh": {
     "bundle": {

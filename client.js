@@ -67,7 +67,7 @@ window.__ModuleLoader__.load({
       resultLabel: '结果',
       changedFields: '差异字段',
       detailHint: '点击一行展开参数与结果的并排细节',
-      footnote: '运行记录只保存在本机；对比只读会话日志，不会重放或改动任何工作区。',
+      footnote: '运行记录只保存在本机；对比只读会话日志，重放会复制工作区并在副本里真实执行。',
       metricToolCalls: '工具调用',
       metricFailures: '失败调用',
       metricTokens: 'Token 总量',
@@ -99,6 +99,78 @@ window.__ModuleLoader__.load({
       diffCount: '处差异',
       matchedCount: '处一致',
       orderNote: '顺序按工具序列对齐，插入/缺失不会让后续全部错位。',
+      replay: '重放',
+      replayTag: '重放',
+      replayTitle: '重放这次运行',
+      replaySubtitle: '在同一任务上换模型或提示词再跑一次，结束后自动生成对照运行。',
+      replayTask: '任务提示词',
+      replayModel: '模型',
+      replayEffort: '推理强度',
+      replayEffortDefault: '模型默认',
+      replayWorkspace: '工作区',
+      replayCopyNote: '会把基线工作目录复制到临时目录，工具只能改动副本；越界操作自动拒绝，不会等待人工审批。',
+      replayCostNote: '重放会真实调用模型并消耗 Token。',
+      replayStart: '开始重放',
+      replayPhasePreparing: '正在复制工作区…',
+      replayPhaseStarting: '正在创建会话…',
+      replayPhaseRunning: '模型正在执行任务…',
+      replayPhaseFinishing: '正在收尾并保存运行…',
+      replayCancel: '取消重放',
+      replayCancelling: '正在取消…',
+      replayCancelled: '已取消；已产生的轨迹已保存为运行。',
+      replayTimeout: '超过 20 分钟，已取消并把已产生的轨迹保存为运行。',
+      replayFailed: '重放失败',
+      replayDone: '重放完成，已选中基线 A 与新的对照 B。',
+      replayTools: '工具调用',
+      replaySteps: '步骤',
+      replayElapsed: '耗时',
+      replayOpen: '打开这次重放',
+      replayRetry: '再试一次',
+      replayNoCatalog: '读不到模型目录，将沿用基线模型。',
+      replayPromptEmpty: '任务提示词不能为空。',
+      tabCompare: '对比',
+      tabMatrix: '矩阵',
+      matrixHint: '行是任务，列是变体；单元格是该组合的通过率、平均调用数与 Token。没有断言的单元格按「这一轮正常结束」判定。',
+      matrixRows: '个任务',
+      matrixTaskColumn: '任务',
+      matrixEmpty: '还没有可聚合的运行',
+      matrixEmptyBody: '先从会话导入一次运行，或对某个任务重放一个变体。',
+      matrixPass: '通过',
+      matrixRunVariant: '重放这个变体',
+      matrixCellHint: '点击查看这个单元格的运行与断言结果',
+      matrixEditChecks: '断言',
+      matrixCheckCount: '项断言',
+      matrixNoChecks: '无断言',
+      matrixChecksBroken: '断言文件损坏',
+      cellTitle: '变体运行',
+      cellPickA: '设为 A',
+      cellPickB: '设为 B',
+      cellCompare: '对比 A / B',
+      cellReplay: '重放这个变体',
+      cellResults: '断言结果',
+      cellFail: '未通过',
+      checksTitle: '任务断言',
+      checksSubtitle: '同一任务的所有运行共用这套断言；矩阵通过率与 CI 门禁都用它判定。',
+      checksBuiltIn: '这一轮正常结束',
+      checksBuiltInHint: '内置检查，始终生效',
+      checksEmpty: '还没有断言。当前只检查这一轮是否正常结束。',
+      checksAdd: '添加断言',
+      checksType: '断言类型',
+      checksSave: '保存',
+      checksSaved: '断言已保存。',
+      checksInvalid: '请补全断言参数。',
+      checksRemove: '移除',
+      checkNoTool: '不使用工具',
+      checkFileContains: '文件包含文本',
+      checkFinalContains: '最终回复包含',
+      checkMaxToolCalls: '工具调用上限',
+      checkMaxTokens: 'Token 上限',
+      checkMaxFailures: '失败调用上限',
+      checkPath: '相对工作区的路径',
+      checkText: '要包含的文本',
+      checkMax: '上限',
+      checkNoToolHint: '要求这次运行没有调用任何工具。',
+      replayDoneMatrix: '重放完成，矩阵已刷新。',
     }
 
     const EN = {
@@ -160,7 +232,7 @@ window.__ModuleLoader__.load({
       resultLabel: 'Result',
       changedFields: 'Changed fields',
       detailHint: 'Select a row to expand arguments and results side by side',
-      footnote: 'Runs stay on this machine. Comparing only reads session logs — it never replays or touches a workspace.',
+      footnote: 'Runs stay on this machine. Comparing only reads session logs; replay copies the workspace and really executes tools inside the copy.',
       metricToolCalls: 'Tool calls',
       metricFailures: 'Failed calls',
       metricTokens: 'Tokens',
@@ -192,6 +264,78 @@ window.__ModuleLoader__.load({
       diffCount: 'differences',
       matchedCount: 'matches',
       orderNote: 'Calls are aligned by sequence, so one inserted or dropped call does not shift everything after it.',
+      replay: 'Replay',
+      replayTag: 'replay',
+      replayTitle: 'Replay this run',
+      replaySubtitle: 'Run the same task again with another model or prompt, then compare the two runs.',
+      replayTask: 'Task prompt',
+      replayModel: 'Model',
+      replayEffort: 'Reasoning effort',
+      replayEffortDefault: 'Model default',
+      replayWorkspace: 'Workspace',
+      replayCopyNote: 'The baseline workspace is copied to a temporary directory, tools can only change that copy, and out-of-bounds actions are denied instead of waiting for approval.',
+      replayCostNote: 'A replay makes real model calls and consumes tokens.',
+      replayStart: 'Start replay',
+      replayPhasePreparing: 'Copying the workspace…',
+      replayPhaseStarting: 'Creating the session…',
+      replayPhaseRunning: 'The model is working on the task…',
+      replayPhaseFinishing: 'Saving the new run…',
+      replayCancel: 'Cancel replay',
+      replayCancelling: 'Cancelling…',
+      replayCancelled: 'Cancelled. The partial trace was saved as a run.',
+      replayTimeout: 'The replay exceeded 20 minutes; it was cancelled and its partial trace saved.',
+      replayFailed: 'Replay failed',
+      replayDone: 'Replay finished: baseline A and the new candidate B are selected.',
+      replayTools: 'Tool calls',
+      replaySteps: 'Steps',
+      replayElapsed: 'Elapsed',
+      replayOpen: 'Open this replay',
+      replayRetry: 'Try again',
+      replayNoCatalog: 'The model catalog is unavailable; the baseline model will be used.',
+      replayPromptEmpty: 'The task prompt cannot be empty.',
+      tabCompare: 'Compare',
+      tabMatrix: 'Matrix',
+      matrixHint: 'Rows are tasks, columns are variants; a cell shows pass rate, average tool calls, and tokens. Without checks, a run passes when its turn completes normally.',
+      matrixRows: 'tasks',
+      matrixTaskColumn: 'Task',
+      matrixEmpty: 'No runs to aggregate yet',
+      matrixEmptyBody: 'Import a run from a session, or replay a variant of a task.',
+      matrixPass: 'passed',
+      matrixRunVariant: 'Run this variant',
+      matrixCellHint: 'Show the runs and check results in this cell',
+      matrixEditChecks: 'Checks',
+      matrixCheckCount: 'checks',
+      matrixNoChecks: 'no checks',
+      matrixChecksBroken: 'checks file is broken',
+      cellTitle: 'Variant runs',
+      cellPickA: 'Set A',
+      cellPickB: 'Set B',
+      cellCompare: 'Compare A / B',
+      cellReplay: 'Run this variant',
+      cellResults: 'Check results',
+      cellFail: 'failed',
+      checksTitle: 'Task checks',
+      checksSubtitle: 'Every run of this task shares these checks; the matrix pass rate and the CI gate both use them.',
+      checksBuiltIn: 'Turn completes normally',
+      checksBuiltInHint: 'Built-in check, always applied',
+      checksEmpty: 'No checks yet. Only normal turn completion is required.',
+      checksAdd: 'Add check',
+      checksType: 'Check type',
+      checksSave: 'Save',
+      checksSaved: 'Checks saved.',
+      checksInvalid: 'Fill in every check parameter.',
+      checksRemove: 'Remove',
+      checkNoTool: 'No tools',
+      checkFileContains: 'File contains text',
+      checkFinalContains: 'Final reply contains',
+      checkMaxToolCalls: 'Max tool calls',
+      checkMaxTokens: 'Max tokens',
+      checkMaxFailures: 'Max failed calls',
+      checkPath: 'Path inside the workspace',
+      checkText: 'Text to find',
+      checkMax: 'Maximum',
+      checkNoToolHint: 'Require that this run called no tool at all.',
+      replayDoneMatrix: 'Replay finished; the matrix is refreshed.',
     }
 
     const STATUSES = ['same', 'args', 'result', 'flip', 'onlyA', 'onlyB']
@@ -209,8 +353,8 @@ window.__ModuleLoader__.load({
 .dal-btn{height:32px;padding:0 13px;border-radius:16px;border:1px solid var(--dsw-alias-border-l1);background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:background .15s,border-color .15s}
 .dal-btn:hover{background:color-mix(in srgb, var(--dsw-alias-label-primary) 6%, transparent);border-color:var(--dsw-alias-border-l2)}
 .dal-btn:disabled{opacity:.5;cursor:default}
-.dal-btn.primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:#fff}
-.dal-btn.primary:hover{filter:brightness(1.06);background:var(--dsw-alias-brand-primary)}
+.dal-btn.primary{background:var(--dsw-alias-button-primary-fill);border-color:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-primary-foreground)}
+.dal-btn.primary:hover{background:var(--dsw-alias-button-primary-hover);border-color:var(--dsw-alias-button-primary-hover)}
 .dal-btn.ghost{border-color:transparent}
 .dal-btn.danger{color:var(--dsw-alias-state-error-primary);border-color:color-mix(in srgb, var(--dsw-alias-state-error-primary) 45%, transparent)}
 .dal-btn.sm{height:26px;padding:0 10px;font-size:12px;border-radius:13px}
@@ -355,6 +499,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
 .dal-modal-head h2{margin:0;font-size:15.5px;font-weight:600}
 .dal-modal-head p{margin:3px 0 0;font-size:12px;color:var(--dsw-alias-label-secondary)}
 .dal-modal-body{padding:6px 18px 16px;display:flex;flex-direction:column;gap:10px;min-height:0;flex:1}
+.dal-modal-body.scroll{overflow:auto}
 .dal-input{width:100%;height:34px;border-radius:10px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);padding:0 11px;font:inherit;font-size:12.5px;outline:none;box-sizing:border-box}
 .dal-input:focus{border-color:var(--dsw-alias-brand-primary)}
 .dal-session-list{border:1px solid var(--dsw-alias-border-l1);border-radius:11px;overflow:auto;min-height:120px;flex:1;background:var(--dsw-alias-bg-base)}
@@ -367,6 +512,78 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
 .dal-session-sub{font-size:11px;color:var(--dsw-alias-label-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .dal-badge{font-size:10px;padding:0 6px;border-radius:999px;border:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-secondary);white-space:nowrap}
 .dal-badge.live{color:var(--dsw-alias-state-success-primary);border-color:color-mix(in srgb, var(--dsw-alias-state-success-primary) 45%, transparent)}
+.dal-badge.replay{color:var(--dsw-alias-brand-primary);border-color:color-mix(in srgb, var(--dsw-alias-brand-primary) 45%, transparent)}
+.dal-icon-btn.replay:hover{background:color-mix(in srgb, var(--dsw-alias-brand-primary) 12%, transparent);color:var(--dsw-alias-brand-primary)}
+.dal-textarea{width:100%;min-height:118px;resize:vertical;border-radius:10px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);padding:9px 11px;font:inherit;font-size:12.5px;line-height:1.55;outline:none;box-sizing:border-box}
+.dal-textarea:focus{border-color:var(--dsw-alias-brand-primary)}
+.dal-field-label{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dsw-alias-label-secondary);margin-bottom:4px}
+.dal-select{width:100%;height:34px;border-radius:10px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);padding:0 9px;font:inherit;font-size:12.5px;outline:none;box-sizing:border-box}
+.dal-select:focus{border-color:var(--dsw-alias-brand-primary)}
+.dal-form-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px}
+.dal-hint{font-size:11.5px;line-height:1.55;color:var(--dsw-alias-label-secondary)}
+.dal-progress{display:flex;flex-direction:column;gap:10px;padding:2px 0}
+.dal-kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.dal-kv>div{border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-layer-1);padding:8px 10px;min-width:0}
+.dal-kv b{display:block;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4}
+.dal-kv span{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--dsw-alias-label-secondary)}
+.dal-tabs{display:flex;gap:4px;padding:3px;border:1px solid var(--dsw-alias-border-l1);border-radius:999px;background:var(--dsw-alias-bg-layer-1)}
+.dal-tab{height:26px;padding:0 12px;border-radius:999px;border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;cursor:pointer}
+.dal-tab:hover{color:var(--dsw-alias-label-primary)}
+.dal-tab.on{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.dal-matrix{display:flex;flex-direction:column;gap:10px;min-width:0}
+.dal-matrix-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dal-matrix-head h2{margin:0;font-size:14px;font-weight:600}
+.dal-matrix-head .dal-hint{max-width:88ch;margin-top:2px}
+.dal-matrix-scroll{overflow:auto;border:1px solid var(--dsw-alias-border-l1);border-radius:13px;background:var(--dsw-alias-bg-layer-1)}
+.dal-matrix-table{border-collapse:separate;border-spacing:0;min-width:100%}
+.dal-matrix-table th,.dal-matrix-table td{padding:9px 10px;border-bottom:1px solid var(--dsw-alias-border-l1);text-align:left;vertical-align:top}
+.dal-matrix-table thead th{position:sticky;top:0;z-index:2;background:var(--dsw-alias-bg-layer-2);font-size:11px;letter-spacing:.04em;color:var(--dsw-alias-label-secondary);white-space:nowrap}
+.dal-matrix-table tbody tr:last-child th,.dal-matrix-table tbody tr:last-child td{border-bottom:0}
+.dal-matrix-table .corner,.dal-matrix-table tbody th{position:sticky;left:0;z-index:1;background:var(--dsw-alias-bg-layer-1);min-width:210px;max-width:280px}
+.dal-matrix-table thead .corner{z-index:3;background:var(--dsw-alias-bg-layer-2)}
+.dal-matrix-task-title{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dal-matrix-task-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;font-size:10.5px;color:var(--dsw-alias-label-secondary)}
+.dal-matrix-task-meta code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px}
+.dal-matrix-task-meta .dal-link-btn{border:0;background:transparent;color:var(--dsw-alias-brand-primary);font:inherit;font-size:10.5px;cursor:pointer;padding:0}
+.dal-matrix-col b{display:block;font-size:12px;font-weight:600;color:var(--dsw-alias-label-primary)}
+.dal-matrix-col small{display:block;font-size:10px;color:var(--dsw-alias-label-secondary);margin-top:1px}
+.dal-mini{display:inline-block;margin-top:3px;font-size:9.5px;padding:0 5px;border-radius:999px;border:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-secondary)}
+.dal-matrix-cell{display:flex;flex-direction:column;gap:1px;width:100%;min-width:128px;border:1px solid var(--dsw-alias-border-l1);border-radius:10px;padding:7px 9px;text-align:left;background:var(--dsw-alias-bg-base);color:inherit;font:inherit;cursor:pointer}
+.dal-matrix-cell:hover{border-color:var(--dsw-alias-border-l2)}
+.dal-matrix-cell b{font-size:17px;line-height:1.25;font-variant-numeric:tabular-nums}
+.dal-matrix-cell span{font-size:10.5px;color:var(--dsw-alias-label-secondary)}
+.dal-matrix-cell small{font-size:10px;color:var(--dsw-alias-label-secondary);white-space:nowrap}
+.dal-matrix-cell.pass{border-color:color-mix(in srgb, var(--dsw-alias-state-success-primary) 40%, transparent);background:color-mix(in srgb, var(--dsw-alias-state-success-primary) 8%, transparent)}
+.dal-matrix-cell.fail{border-color:color-mix(in srgb, var(--dsw-alias-state-error-primary) 40%, transparent);background:color-mix(in srgb, var(--dsw-alias-state-error-primary) 7%, transparent)}
+.dal-matrix-cell.mixed{border-color:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 40%, transparent);background:color-mix(in srgb, var(--dsw-alias-state-warn-primary) 8%, transparent)}
+.dal-matrix-cell.empty{border-style:dashed;align-items:flex-start;opacity:.72}
+.dal-matrix-cell.empty b{font-size:13px;font-weight:500;color:var(--dsw-alias-label-secondary)}
+.dal-matrix-cell.empty:hover{opacity:1;border-color:var(--dsw-alias-brand-primary)}
+.dal-badge.pass{color:var(--dsw-alias-state-success-primary);border-color:color-mix(in srgb, var(--dsw-alias-state-success-primary) 45%, transparent)}
+.dal-badge.fail{color:var(--dsw-alias-state-error-primary);border-color:color-mix(in srgb, var(--dsw-alias-state-error-primary) 45%, transparent)}
+.dal-checks{display:flex;flex-direction:column;gap:8px}
+.dal-check-builtin{display:flex;gap:8px;align-items:center;border:1px dashed var(--dsw-alias-border-l2);border-radius:9px;padding:8px 10px;font-size:12px;color:var(--dsw-alias-label-secondary)}
+.dal-check-row{border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-layer-1);padding:9px 10px;display:flex;flex-direction:column;gap:8px}
+.dal-check-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px}
+.dal-check-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dal-check-field{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--dsw-alias-label-secondary);min-width:0}
+.dal-check-add{display:flex;gap:8px;align-items:center;padding-top:2px}
+.dal-check-add .dal-select{flex:1;min-width:0}
+.dal-run-row{border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-layer-1);padding:9px 10px;display:flex;flex-direction:column;gap:5px}
+.dal-run-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.dal-run-head>div:first-child{display:flex;align-items:center;gap:8px;font-size:12px}
+.dal-run-actions{display:flex;gap:6px}
+.dal-run-meta{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;color:var(--dsw-alias-label-secondary);word-break:break-all}
+.dal-details summary{cursor:pointer;font-size:11px;color:var(--dsw-alias-label-secondary);outline:none}
+.dal-details summary:hover{color:var(--dsw-alias-label-primary)}
+.dal-result{display:flex;gap:7px;align-items:baseline;font-size:11px;padding:3px 0 3px 4px;border-top:1px dashed var(--dsw-alias-border-l1)}
+.dal-result:first-of-type{border-top:0}
+.dal-result-mark{font-weight:700;flex:none}
+.dal-result.ok .dal-result-mark{color:var(--dsw-alias-state-success-primary)}
+.dal-result.bad .dal-result-mark{color:var(--dsw-alias-state-error-primary)}
+.dal-result-type{flex:none;font-weight:550}
+.dal-result-detail{color:var(--dsw-alias-label-secondary);min-width:0;word-break:break-word}
+.dal-matrix-empty .dal-btn{margin-top:4px}
 .dal-modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:0 18px 16px}
 .dal-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media (max-width: 1040px){
@@ -380,6 +597,9 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
   .dal-trace-head,.dal-row{grid-template-columns:minmax(0,1fr) 74px minmax(0,1fr)}
   .dal-task-grid{grid-template-columns:1fr}
   .dal-task-col + .dal-task-col{border-left:0;border-top:1px solid var(--dsw-alias-border-l1)}
+  .dal-form-row{grid-template-columns:1fr}
+  .dal-check-fields{grid-template-columns:1fr}
+  .dal-matrix-table .corner,.dal-matrix-table tbody th{min-width:160px}
 }
 `
 
@@ -556,6 +776,26 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
       )
     }
 
+    function GlyphReplay({ size = 13 }) {
+      return h(
+        'svg',
+        {
+          width: size,
+          height: size,
+          viewBox: '0 0 24 24',
+          fill: 'none',
+          stroke: 'currentColor',
+          strokeWidth: 1.8,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          'aria-hidden': true,
+          style: { display: 'block' },
+        },
+        h('path', { d: 'M20 11a8 8 0 1 0-2.4 6.2' }),
+        h('path', { d: 'M20 4v7h-7' }),
+      )
+    }
+
     function Spinner() {
       return h('span', { className: 'dal-spinner', 'aria-hidden': true })
     }
@@ -564,7 +804,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
       return h('span', { className: `dal-pill st-${status}` }, t(status))
     }
 
-    function PickerMenu({ runs, selectedId, otherId, onPick, onDelete, pendingDelete, setPendingDelete, t }) {
+    function PickerMenu({ runs, selectedId, otherId, onPick, onDelete, onReplay, pendingDelete, setPendingDelete, t }) {
       if (runs.length === 0) return h('div', { className: 'dal-menu' }, h('div', { className: 'dal-menu-empty' }, t('noRunsYet')))
       return h(
         'div',
@@ -597,9 +837,24 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
               ),
             ),
             run.id === otherId ? h('span', { className: 'dal-badge' }, 'A/B') : null,
+            run.replay === undefined ? null : h('span', { className: 'dal-badge replay' }, t('replayTag')),
             h(
               'div',
               { className: 'dal-menu-row-actions' },
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dal-icon-btn replay',
+                  title: t('replay'),
+                  'aria-label': t('replay'),
+                  onClick: (event) => {
+                    event.stopPropagation()
+                    onReplay(run)
+                  },
+                },
+                h(GlyphReplay, {}),
+              ),
               pendingDelete === run.id
                 ? h(
                     'button',
@@ -634,7 +889,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
       )
     }
 
-    function RunPicker({ role, label, run, runs, selectedId, otherId, onPick, onDelete, pendingDelete, setPendingDelete, t }) {
+    function RunPicker({ role, label, run, runs, selectedId, otherId, onPick, onDelete, onReplay, pendingDelete, setPendingDelete, t }) {
       const [open, setOpen] = useState(false)
       const wrapper = useRef(null)
 
@@ -699,6 +954,10 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
                 setOpen(false)
               },
               onDelete,
+              onReplay: (candidate) => {
+                setOpen(false)
+                onReplay(candidate)
+              },
               pendingDelete,
               setPendingDelete,
               t,
@@ -1080,6 +1339,885 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
       )
     }
 
+    const REPLAY_TERMINAL = new Set(['completed', 'cancelled', 'timeout', 'failed'])
+
+    /** Flatten the Host model catalog into `<provider>\u241F<model>` choices. */
+    function modelChoices(groups, baseRun, preferred) {
+      const choices = []
+      for (const group of Array.isArray(groups) ? groups : []) {
+        for (const model of Array.isArray(group?.models) ? group.models : []) {
+          choices.push({
+            value: `${group.id}\u241F${model.id}`,
+            provider: group.id,
+            model: model.id,
+            label: `${model.name || model.id} · ${group.name || group.id}`,
+            efforts: Array.isArray(model.reasoning?.efforts) ? model.reasoning.efforts : [],
+            defaultEffort: model.reasoning?.defaultEffort ?? '',
+          })
+        }
+      }
+      const add = (provider, model) => {
+        if (typeof provider !== 'string' || provider === '' || typeof model !== 'string' || model === '') return
+        if (choices.some((choice) => choice.provider === provider && choice.model === model)) return
+        choices.unshift({
+          value: `${provider}\u241F${model}`,
+          provider,
+          model,
+          label: `${model} · ${provider}`,
+          efforts: [],
+          defaultEffort: '',
+        })
+      }
+      add(preferred?.provider, preferred?.model)
+      add(baseRun?.config?.provider, baseRun?.config?.model)
+      return choices
+    }
+
+    function replayPhaseLabel(phase, t) {
+      if (phase === 'preparing') return t('replayPhasePreparing')
+      if (phase === 'starting') return t('replayPhaseStarting')
+      if (phase === 'running') return t('replayPhaseRunning')
+      if (phase === 'finishing') return t('replayPhaseFinishing')
+      return t('replayPhaseDone')
+    }
+
+    function ReplayDialog({ baseRun, initialModel, onClose, onDone, t }) {
+      const [catalog, setCatalog] = useState({ status: 'loading', groups: [], error: null })
+      const [prompt, setPrompt] = useState(baseRun.prompt ?? '')
+      const [choiceValue, setChoiceValue] = useState(() => {
+        const provider = initialModel?.provider ?? baseRun.config?.provider ?? ''
+        const model = initialModel?.model ?? baseRun.config?.model ?? ''
+        return `${provider}\u241F${model}`
+      })
+      const [effort, setEffort] = useState(() => {
+        if (initialModel !== null && initialModel !== undefined) {
+          return typeof initialModel.reasoningEffort === 'string' ? initialModel.reasoningEffort : ''
+        }
+        if (typeof baseRun.config?.reasoningEffort === 'string') return baseRun.config.reasoningEffort
+        return ''
+      })
+      const [job, setJob] = useState(null)
+      const [error, setError] = useState(null)
+      const [busy, setBusy] = useState(false)
+      const doneRef = useRef(false)
+
+      useEffect(() => {
+        let cancelled = false
+        api('models')
+          .then((payload) => {
+            if (cancelled) return
+            setCatalog({ status: 'ready', groups: payload.groups ?? [], error: null })
+          })
+          .catch((loadError) => {
+            if (cancelled) return
+            setCatalog({ status: 'error', groups: [], error: loadError.message })
+          })
+        return () => {
+          cancelled = true
+        }
+      }, [])
+
+      useEffect(() => {
+        const onKey = (event) => {
+          if (event.key === 'Escape') onClose()
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+      }, [onClose])
+
+      const choices = useMemo(
+        () => modelChoices(catalog.groups, baseRun, initialModel),
+        [catalog.groups, baseRun, initialModel],
+      )
+      const choice = choices.find((item) => item.value === choiceValue) ?? choices[0]
+
+      const effortOptions = useMemo(() => {
+        const list = [...(choice?.efforts ?? [])]
+        if (effort !== '' && !list.some((item) => item.id === effort)) list.unshift({ id: effort, name: effort })
+        return list
+      }, [choice, effort])
+
+      useEffect(() => {
+        const id = job?.id
+        if (id === undefined || REPLAY_TERMINAL.has(job.status)) return undefined
+        const timer = setInterval(() => {
+          api(`replay?id=${encodeURIComponent(id)}`)
+            .then((payload) => setJob(payload.job))
+            .catch((pollError) => setError(pollError.message))
+        }, 1000)
+        return () => clearInterval(timer)
+      }, [job?.id, job?.status])
+
+      useEffect(() => {
+        if (doneRef.current) return
+        if (job !== null && job.status === 'completed' && typeof job.runId === 'string') {
+          doneRef.current = true
+          onDone(job)
+        }
+      }, [job, onDone])
+
+      const start = async () => {
+        if (busy) return
+        if (prompt.trim() === '') {
+          setError(t('replayPromptEmpty'))
+          return
+        }
+        setBusy(true)
+        setError(null)
+        try {
+          const payload = await api('replay', {
+            method: 'POST',
+            body: JSON.stringify({
+              baseRunId: baseRun.id,
+              prompt,
+              provider: choice?.provider,
+              model: choice?.model,
+              reasoningEffort: effort === '' ? undefined : effort,
+            }),
+          })
+          setJob(payload.job)
+        } catch (startError) {
+          setError(startError.message)
+        } finally {
+          setBusy(false)
+        }
+      }
+
+      const cancel = async () => {
+        if (job === null || job.cancelRequested) return
+        setBusy(true)
+        try {
+          const payload = await api('replay/cancel', { method: 'POST', body: JSON.stringify({ id: job.id }) })
+          setJob(payload.job)
+        } catch (cancelError) {
+          setError(cancelError.message)
+        } finally {
+          setBusy(false)
+        }
+      }
+
+      const running = job !== null && !REPLAY_TERMINAL.has(job.status)
+      const elapsed = job === null ? 0 : Math.max(0, (job.finishedAt ?? Date.now()) - job.startedAt)
+
+      let body
+      if (job === null) {
+        body = [
+          h(
+            'div',
+            { key: 'prompt' },
+            h('span', { className: 'dal-field-label' }, t('replayTask')),
+            h('textarea', {
+              className: 'dal-textarea',
+              value: prompt,
+              rows: 5,
+              spellCheck: false,
+              'aria-label': t('replayTask'),
+              onChange: (event) => setPrompt(event.target.value),
+            }),
+          ),
+          h(
+            'div',
+            { key: 'model', className: 'dal-form-row' },
+            h(
+              'label',
+              {},
+              h('span', { className: 'dal-field-label' }, t('replayModel')),
+              h(
+                'select',
+                {
+                  className: 'dal-select',
+                  value: choice?.value ?? '',
+                  onChange: (event) => {
+                    const next = choices.find((item) => item.value === event.target.value)
+                    setChoiceValue(event.target.value)
+                    setEffort(next?.defaultEffort ?? '')
+                  },
+                },
+                choices.map((item) => h('option', { key: item.value, value: item.value }, item.label)),
+              ),
+            ),
+            effortOptions.length === 0
+              ? null
+              : h(
+                  'label',
+                  {},
+                  h('span', { className: 'dal-field-label' }, t('replayEffort')),
+                  h(
+                    'select',
+                    {
+                      className: 'dal-select',
+                      value: effort,
+                      onChange: (event) => setEffort(event.target.value),
+                    },
+                    h('option', { value: '' }, t('replayEffortDefault')),
+                    effortOptions.map((item) => h('option', { key: item.id, value: item.id }, item.name || item.id)),
+                  ),
+                ),
+          ),
+          h(
+            'div',
+            { key: 'copy', className: 'dal-hint' },
+            `${t('replayWorkspace')} · ${baseRun.session?.cwd ?? t('workspaceUnknown')}`,
+            h('br'),
+            t('replayCopyNote'),
+          ),
+          catalog.status === 'error'
+            ? h('div', { key: 'catalog', className: 'dal-banner warn' }, t('replayNoCatalog'))
+            : null,
+          h('div', { key: 'cost', className: 'dal-hint' }, t('replayCostNote')),
+          error === null ? null : h('div', { key: 'error', className: 'dal-banner error' }, error),
+        ].filter(Boolean)
+      } else {
+        body = h(
+          'div',
+          { className: 'dal-progress' },
+          h('div', { className: 'dal-hint' }, replayPhaseLabel(job.phase, t)),
+          h(
+            'div',
+            { className: 'dal-kv' },
+            h('div', {}, h('b', {}, fmtInt(job.progress?.toolCalls ?? 0)), h('span', {}, t('replayTools'))),
+            h('div', {}, h('b', {}, fmtInt(job.progress?.steps ?? 0)), h('span', {}, t('replaySteps'))),
+            h('div', {}, h('b', {}, fmtMs(elapsed)), h('span', {}, t('replayElapsed'))),
+          ),
+          h(
+            'div',
+            { className: 'dal-hint' },
+            `${t('replayModel')} · ${job.model.provider}/${job.model.model}${job.model.reasoningEffort === null ? '' : ` · ${job.model.reasoningEffort}`}`,
+          ),
+          job.workspaceDir === null ? null : h('div', { className: 'dal-hint mono' }, job.workspaceDir),
+          running ? h('div', { className: 'dal-loading' }, h(Spinner, {}), replayPhaseLabel(job.phase, t)) : null,
+          job.status === 'cancelled' ? h('div', { className: 'dal-banner warn' }, t('replayCancelled')) : null,
+          job.status === 'timeout' ? h('div', { className: 'dal-banner warn' }, t('replayTimeout')) : null,
+          job.status === 'failed'
+            ? h('div', { className: 'dal-banner error' }, `${t('replayFailed')}：${job.error ?? ''}`)
+            : null,
+          error === null ? null : h('div', { className: 'dal-banner error' }, error),
+        )
+      }
+
+      return h(
+        'div',
+        {
+          className: 'dal-backdrop',
+          onPointerDown: (event) => {
+            if (event.target === event.currentTarget && !running) onClose()
+          },
+        },
+        h(
+          'div',
+          { className: 'dal-modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('replayTitle') },
+          h(
+            'div',
+            { className: 'dal-modal-head' },
+            h(
+              'div',
+              {},
+              h('h2', {}, t('replayTitle')),
+              h('p', {}, t('replaySubtitle')),
+            ),
+            h(
+              'button',
+              { type: 'button', className: 'dal-icon-btn', onClick: onClose, 'aria-label': t('close') },
+              '✕',
+            ),
+          ),
+          h('div', { className: 'dal-modal-body' }, body),
+          h(
+            'div',
+            { className: 'dal-modal-foot' },
+            job === null
+              ? h('button', { type: 'button', className: 'dal-btn', onClick: onClose, disabled: busy }, t('cancel'))
+              : h('button', { type: 'button', className: 'dal-btn', onClick: onClose }, t('close')),
+            job === null
+              ? h(
+                  'button',
+                  { type: 'button', className: 'dal-btn primary', onClick: () => void start(), disabled: busy },
+                  busy ? t('capturing') : t('replayStart'),
+                )
+              : running
+                ? h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'dal-btn danger',
+                      onClick: () => void cancel(),
+                      disabled: busy || job.cancelRequested,
+                    },
+                    job.cancelRequested ? t('replayCancelling') : t('replayCancel'),
+                  )
+                : job.runId !== null
+                  ? h(
+                      'button',
+                      { type: 'button', className: 'dal-btn primary', onClick: () => onDone(job) },
+                      t('replayOpen'),
+                    )
+                  : h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'dal-btn',
+                        onClick: () => {
+                          setJob(null)
+                          setError(null)
+                        },
+                      },
+                      t('replayRetry'),
+                    ),
+          ),
+        ),
+      )
+    }
+
+    const CHECK_TYPE_KEYS = [
+      ['no-tool', 'checkNoTool'],
+      ['file-contains', 'checkFileContains'],
+      ['final-contains', 'checkFinalContains'],
+      ['max-tool-calls', 'checkMaxToolCalls'],
+      ['max-total-tokens', 'checkMaxTokens'],
+      ['max-failures', 'checkMaxFailures'],
+    ]
+
+    function checkLabel(type, t) {
+      if (type === 'turn-completed') return t('checksBuiltIn')
+      if (type === 'checks-error') return t('matrixChecksBroken')
+      const entry = CHECK_TYPE_KEYS.find(([value]) => value === type)
+      return entry === undefined ? String(type ?? '') : t(entry[1])
+    }
+
+    function emptyCheck(type) {
+      if (type === 'file-contains') return { type, path: '', text: '' }
+      if (type === 'final-contains') return { type, text: '' }
+      if (type === 'max-tool-calls') return { type, max: 10 }
+      if (type === 'max-total-tokens') return { type, max: 50000 }
+      if (type === 'max-failures') return { type, max: 0 }
+      return { type: 'no-tool' }
+    }
+
+    function cloneChecks(checks) {
+      return JSON.parse(JSON.stringify(Array.isArray(checks) ? checks : []))
+    }
+
+    function validateChecks(checks, t) {
+      for (const check of checks) {
+        if (check.type === 'file-contains' && String(check.path ?? '').trim() === '') return t('checksInvalid')
+        if (
+          (check.type === 'file-contains' || check.type === 'final-contains') &&
+          String(check.text ?? '').trim() === ''
+        ) {
+          return t('checksInvalid')
+        }
+        if (check.type.startsWith('max-') && !(Number.isSafeInteger(check.max) && check.max >= 0)) {
+          return t('checksInvalid')
+        }
+      }
+      return null
+    }
+
+    function cellTone(cell) {
+      if (cell.passCount === cell.total) return 'pass'
+      if (cell.passCount === 0) return 'fail'
+      return 'mixed'
+    }
+
+    function passPercent(cell) {
+      return cell.total === 0 ? 0 : Math.round((cell.passCount / cell.total) * 100)
+    }
+
+    function fmtAvg(value) {
+      const number = Number(value) || 0
+      return Number.isInteger(number) ? fmtInt(number) : number.toFixed(1)
+    }
+
+    function ResultLine({ result, t }) {
+      return h(
+        'div',
+        { className: `dal-result ${result.ok ? 'ok' : 'bad'}` },
+        h('span', { className: 'dal-result-mark' }, result.ok ? '✓' : '✗'),
+        h('span', { className: 'dal-result-type' }, checkLabel(result.type, t)),
+        h('span', { className: 'dal-result-detail' }, result.detail ?? ''),
+      )
+    }
+
+    function CellDialog({ task, column, cell, onClose, onCompare, onReplay, onEditChecks, t }) {
+      const [aId, setAId] = useState(cell.runs.length > 1 ? cell.runs[1].id : null)
+      const [bId, setBId] = useState(cell.runs[0]?.id ?? null)
+
+      useEffect(() => {
+        const onKey = (event) => {
+          if (event.key === 'Escape') onClose()
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+      }, [onClose])
+
+      const canCompare = aId !== null && bId !== null
+
+      return h(
+        'div',
+        {
+          className: 'dal-backdrop',
+          onPointerDown: (event) => {
+            if (event.target === event.currentTarget) onClose()
+          },
+        },
+        h(
+          'div',
+          { className: 'dal-modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('cellTitle') },
+          h(
+            'div',
+            { className: 'dal-modal-head' },
+            h(
+              'div',
+              {},
+              h('h2', {}, task.title),
+              h('p', {}, column.label),
+            ),
+            h(
+              'button',
+              { type: 'button', className: 'dal-icon-btn', onClick: onClose, 'aria-label': t('close') },
+              '✕',
+            ),
+          ),
+          h(
+            'div',
+            { className: 'dal-modal-body scroll' },
+            h(
+              'div',
+              { className: 'dal-run-actions' },
+              h('button', { type: 'button', className: 'dal-btn sm', onClick: onReplay }, t('cellReplay')),
+              h('button', { type: 'button', className: 'dal-btn sm', onClick: onEditChecks }, t('matrixEditChecks')),
+            ),
+            cell.runs.map((run) =>
+              h(
+                'div',
+                { key: run.id, className: 'dal-run-row' },
+                h(
+                  'div',
+                  { className: 'dal-run-head' },
+                  h(
+                    'div',
+                    {},
+                    h('b', {}, fmtWhen(run.capturedAt)),
+                    h(
+                      'span',
+                      { className: `dal-badge ${run.passed ? 'pass' : 'fail'}` },
+                      run.passed ? t('matrixPass') : t('cellFail'),
+                    ),
+                  ),
+                  h(
+                    'div',
+                    { className: 'dal-run-actions' },
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: `dal-btn sm${aId === run.id ? ' primary' : ''}`,
+                        onClick: () => setAId(run.id),
+                      },
+                      t('cellPickA'),
+                    ),
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: `dal-btn sm${bId === run.id ? ' primary' : ''}`,
+                        onClick: () => setBId(run.id),
+                      },
+                      t('cellPickB'),
+                    ),
+                  ),
+                ),
+                h(
+                  'div',
+                  { className: 'dal-run-meta' },
+                  `${run.id} · ${fmtInt(run.toolCalls)} ${t('calls')} · ${fmtCompact(run.tokens)} tokens · ${fmtMs(run.durationMs)}`,
+                ),
+                run.results.length === 0
+                  ? null
+                  : h(
+                      'details',
+                      { className: 'dal-details' },
+                      h(
+                        'summary',
+                        {},
+                        `${t('cellResults')} · ${run.results.filter((result) => result.ok).length}/${run.results.length}`,
+                      ),
+                      run.results.map((result, index) => h(ResultLine, { key: index, result, t })),
+                    ),
+              ),
+            ),
+          ),
+          h(
+            'div',
+            { className: 'dal-modal-foot' },
+            h('button', { type: 'button', className: 'dal-btn', onClick: onClose }, t('close')),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'dal-btn primary',
+                disabled: !canCompare,
+                onClick: () => {
+                  if (canCompare) onCompare(aId, bId)
+                },
+              },
+              t('cellCompare'),
+            ),
+          ),
+        ),
+      )
+    }
+
+    function MatrixView({ refreshToken, onEditChecks, onReplayCell, onCompare, onImport, t }) {
+      const [matrix, setMatrix] = useState({ status: 'loading', data: null, error: null })
+      const [openCell, setOpenCell] = useState(null)
+      const [retry, setRetry] = useState(0)
+
+      useEffect(() => {
+        let cancelled = false
+        setMatrix({ status: 'loading', data: null, error: null })
+        api('matrix')
+          .then((payload) => {
+            if (cancelled) return
+            setMatrix({ status: 'ready', data: payload.matrix, error: null })
+          })
+          .catch((error) => {
+            if (cancelled) return
+            setMatrix({ status: 'error', data: null, error: error.message })
+          })
+        return () => {
+          cancelled = true
+        }
+      }, [refreshToken, retry])
+
+      let body
+      if (matrix.status === 'loading') {
+        body = h('div', { className: 'dal-loading' }, h(Spinner, {}), t('loading'))
+      } else if (matrix.status === 'error') {
+        body = h(
+          'div',
+          { className: 'dal-banner error' },
+          h('span', {}, `${t('error')}：${matrix.error}`),
+          h('button', { type: 'button', className: 'dal-btn sm', onClick: () => setRetry((value) => value + 1) }, t('retry')),
+        )
+      } else if (matrix.data.tasks.length === 0) {
+        body = h(
+          'div',
+          { className: 'dal-empty dal-matrix-empty' },
+          h('div', { className: 'dal-empty-mark' }, h(GlyphFlask, { size: 26 })),
+          h('h2', {}, t('matrixEmpty')),
+          h('p', {}, t('matrixEmptyBody')),
+          h('button', { type: 'button', className: 'dal-btn primary', onClick: onImport }, t('import')),
+        )
+      } else {
+        body = h(
+          'div',
+          { className: 'dal-matrix-scroll' },
+          h(
+            'table',
+            { className: 'dal-matrix-table' },
+            h(
+              'thead',
+              {},
+              h(
+                'tr',
+                {},
+                h('th', { className: 'corner' }, t('matrixTaskColumn')),
+                matrix.data.columns.map((column) =>
+                  h(
+                    'th',
+                    { key: column.key },
+                    h(
+                      'div',
+                      { className: 'dal-matrix-col' },
+                      h('b', {}, column.model),
+                      h('small', {}, column.provider),
+                      column.effort === null ? null : h('span', { className: 'dal-mini' }, column.effort),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            h(
+              'tbody',
+              {},
+              matrix.data.tasks.map((task) =>
+                h(
+                  'tr',
+                  { key: task.key },
+                  h(
+                    'th',
+                    {},
+                    h('div', { className: 'dal-matrix-task-title', title: task.prompt }, task.title),
+                    h(
+                      'div',
+                      { className: 'dal-matrix-task-meta' },
+                      h('code', {}, task.key),
+                      h(
+                        'span',
+                        {
+                          className: `dal-badge${task.checksError === null ? '' : ' fail'}`,
+                          title: task.checksError ?? '',
+                        },
+                        task.checksError !== null
+                          ? t('matrixChecksBroken')
+                          : task.checks.length === 0
+                            ? t('matrixNoChecks')
+                            : `${task.checks.length} ${t('matrixCheckCount')}`,
+                      ),
+                      h(
+                        'button',
+                        { type: 'button', className: 'dal-link-btn', onClick: () => onEditChecks(task) },
+                        t('matrixEditChecks'),
+                      ),
+                    ),
+                  ),
+                  matrix.data.columns.map((column) => {
+                    const cell = task.cells[column.key]
+                    if (cell === undefined) {
+                      return h(
+                        'td',
+                        { key: column.key },
+                        h(
+                          'button',
+                          {
+                            type: 'button',
+                            className: 'dal-matrix-cell empty',
+                            onClick: () => onReplayCell({ run: task.replayBase, model: column }),
+                          },
+                          h('b', {}, '＋'),
+                          h('small', {}, t('matrixRunVariant')),
+                        ),
+                      )
+                    }
+                    return h(
+                      'td',
+                      { key: column.key },
+                      h(
+                        'button',
+                        {
+                          type: 'button',
+                          className: `dal-matrix-cell ${cellTone(cell)}`,
+                          title: t('matrixCellHint'),
+                          onClick: () => setOpenCell({ task, column, cell }),
+                        },
+                        h('b', {}, `${passPercent(cell)}%`),
+                        h('span', {}, `${cell.passCount}/${cell.total} ${t('matrixPass')}`),
+                        h('small', {}, `${fmtAvg(cell.avgToolCalls)} ${t('calls')} · ${fmtCompact(cell.avgTokens)} tokens`),
+                      ),
+                    )
+                  }),
+                ),
+              ),
+            ),
+          ),
+        )
+      }
+
+      return h(
+        'section',
+        { className: 'dal-matrix' },
+        h(
+          'div',
+          { className: 'dal-matrix-head' },
+          h(
+            'div',
+            {},
+            h('h2', {}, t('tabMatrix')),
+            h('p', { className: 'dal-hint' }, t('matrixHint')),
+          ),
+          matrix.data === null ? null : h('span', { className: 'dal-badge' }, `${matrix.data.tasks.length} ${t('matrixRows')}`),
+        ),
+        body,
+        openCell === null
+          ? null
+          : h(CellDialog, {
+              task: openCell.task,
+              column: openCell.column,
+              cell: openCell.cell,
+              onClose: () => setOpenCell(null),
+              onCompare: (a, b) => {
+                setOpenCell(null)
+                onCompare(a, b)
+              },
+              onReplay: () => onReplayCell({ run: openCell.task.replayBase, model: openCell.column }),
+              onEditChecks: () => {
+                const task = openCell.task
+                setOpenCell(null)
+                onEditChecks(task)
+              },
+              t,
+            }),
+      )
+    }
+
+    function ChecksDialog({ task, onClose, onSaved, t }) {
+      const [checks, setChecks] = useState(() => cloneChecks(task.checks))
+      const [addType, setAddType] = useState('no-tool')
+      const [error, setError] = useState(null)
+      const [busy, setBusy] = useState(false)
+
+      useEffect(() => {
+        const onKey = (event) => {
+          if (event.key === 'Escape') onClose()
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+      }, [onClose])
+
+      const update = (index, patch) =>
+        setChecks((current) => current.map((item, position) => (position === index ? { ...item, ...patch } : item)))
+      const remove = (index) => setChecks((current) => current.filter((_, position) => position !== index))
+
+      const save = async () => {
+        if (busy) return
+        const message = validateChecks(checks, t)
+        if (message !== null) {
+          setError(message)
+          return
+        }
+        setBusy(true)
+        setError(null)
+        try {
+          await api('checks', { method: 'POST', body: JSON.stringify({ taskKey: task.key, checks }) })
+          onSaved()
+        } catch (saveError) {
+          setError(saveError.message)
+          setBusy(false)
+        }
+      }
+
+      const field = (label, value, onChange, type = 'text') =>
+        h(
+          'label',
+          { className: 'dal-check-field' },
+          h('span', {}, label),
+          h('input', { className: 'dal-input', type, value: value ?? '', onChange }),
+        )
+
+      const renderRow = (check, index) =>
+        h(
+          'div',
+          { key: index, className: 'dal-check-row' },
+          h(
+            'div',
+            { className: 'dal-check-head' },
+            h('b', {}, checkLabel(check.type, t)),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'dal-icon-btn',
+                title: t('checksRemove'),
+                'aria-label': t('checksRemove'),
+                onClick: () => remove(index),
+              },
+              '✕',
+            ),
+          ),
+          check.type === 'no-tool' ? h('div', { className: 'dal-hint' }, t('checkNoToolHint')) : null,
+          check.type === 'file-contains'
+            ? h(
+                'div',
+                { className: 'dal-check-fields' },
+                field(t('checkPath'), check.path, (event) => update(index, { path: event.target.value })),
+                field(t('checkText'), check.text, (event) => update(index, { text: event.target.value })),
+              )
+            : null,
+          check.type === 'final-contains'
+            ? field(t('checkText'), check.text, (event) => update(index, { text: event.target.value }))
+            : null,
+          check.type.startsWith('max-')
+            ? field(
+                t('checkMax'),
+                check.max,
+                (event) => update(index, { max: event.target.value === '' ? '' : Number(event.target.value) }),
+                'number',
+              )
+            : null,
+        )
+
+      return h(
+        'div',
+        {
+          className: 'dal-backdrop',
+          onPointerDown: (event) => {
+            if (event.target === event.currentTarget) onClose()
+          },
+        },
+        h(
+          'div',
+          { className: 'dal-modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('checksTitle') },
+          h(
+            'div',
+            { className: 'dal-modal-head' },
+            h(
+              'div',
+              {},
+              h('h2', {}, t('checksTitle')),
+              h('p', {}, t('checksSubtitle')),
+            ),
+            h(
+              'button',
+              { type: 'button', className: 'dal-icon-btn', onClick: onClose, 'aria-label': t('close') },
+              '✕',
+            ),
+          ),
+          h(
+            'div',
+            { className: 'dal-modal-body scroll' },
+            task.checksError === null
+              ? null
+              : h('div', { className: 'dal-banner warn' }, `${t('matrixChecksBroken')}：${task.checksError}`),
+            h(
+              'div',
+              { className: 'dal-check-builtin' },
+              h('span', {}, '✓'),
+              h('strong', {}, t('checksBuiltIn')),
+              h('small', {}, `· ${t('checksBuiltInHint')}`),
+            ),
+            checks.length === 0
+              ? h('div', { className: 'dal-hint' }, t('checksEmpty'))
+              : h('div', { className: 'dal-checks' }, checks.map(renderRow)),
+            h(
+              'div',
+              { className: 'dal-check-add' },
+              h(
+                'select',
+                {
+                  className: 'dal-select',
+                  value: addType,
+                  'aria-label': t('checksType'),
+                  onChange: (event) => setAddType(event.target.value),
+                },
+                CHECK_TYPE_KEYS.map(([value, key]) => h('option', { key: value, value }, t(key))),
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dal-btn sm',
+                  onClick: () => setChecks((current) => [...current, emptyCheck(addType)]),
+                },
+                t('checksAdd'),
+              ),
+            ),
+            error === null ? null : h('div', { className: 'dal-banner error' }, error),
+          ),
+          h(
+            'div',
+            { className: 'dal-modal-foot' },
+            h('button', { type: 'button', className: 'dal-btn', onClick: onClose, disabled: busy }, t('cancel')),
+            h(
+              'button',
+              { type: 'button', className: 'dal-btn primary', onClick: () => void save(), disabled: busy },
+              busy ? t('capturing') : t('checksSave'),
+            ),
+          ),
+        ),
+      )
+    }
+
     function LabPage(props) {
       const { t } = props
       const [library, setLibrary] = useState({ status: 'loading', runs: [], dir: '', error: null })
@@ -1092,6 +2230,10 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
       const [pendingDelete, setPendingDelete] = useState(null)
       const [reloadToken, setReloadToken] = useState(0)
       const [notice, setNotice] = useState(null)
+      const [replayRequest, setReplayRequest] = useState(null)
+      const [checksTask, setChecksTask] = useState(null)
+      const [view, setView] = useState('compare')
+      const [matrixToken, setMatrixToken] = useState(0)
       const bIdRef = useRef(null)
       bIdRef.current = bId
 
@@ -1181,6 +2323,35 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
           setBId(run.id)
           setExpanded(-1)
           setNotice(null)
+          setMatrixToken((value) => value + 1)
+        } catch (error) {
+          setNotice({ kind: 'error', text: error.message })
+        }
+      }
+
+      const openReplay = (run) => setReplayRequest({ run, model: null, from: 'compare' })
+
+      const openReplayForCell = ({ run, model }) => {
+        if (run === null || run === undefined) return
+        setReplayRequest({ run, model, from: 'matrix' })
+      }
+
+      const onReplayDone = async (job) => {
+        const fromMatrix = replayRequest?.from === 'matrix'
+        setReplayRequest(null)
+        try {
+          const payload = await api('state')
+          const next = payload.runs ?? []
+          setLibrary({ status: 'ready', runs: next, dir: payload.dir ?? '', error: null })
+          if (fromMatrix) {
+            setMatrixToken((value) => value + 1)
+            setNotice({ kind: '', text: t('replayDoneMatrix') })
+            return
+          }
+          if (typeof job.baseRunId === 'string') setAId(job.baseRunId)
+          if (typeof job.runId === 'string') setBId(job.runId)
+          setExpanded(-1)
+          setNotice({ kind: '', text: t('replayDone') })
         } catch (error) {
           setNotice({ kind: 'error', text: error.message })
         }
@@ -1439,6 +2610,22 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
         body = null
       }
 
+      if (view === 'matrix') {
+        body = h(MatrixView, {
+          refreshToken: matrixToken,
+          onEditChecks: (task) => setChecksTask(task),
+          onReplayCell: openReplayForCell,
+          onCompare: (a, b) => {
+            setAId(a)
+            setBId(b)
+            setView('compare')
+            setExpanded(-1)
+          },
+          onImport: () => setImportOpen(true),
+          t,
+        })
+      }
+
       return h(
         'div',
         { className: 'dal-root' },
@@ -1467,12 +2654,35 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
                 'div',
                 { className: 'dal-actions' },
                 h(
+                  'div',
+                  { className: 'dal-tabs' },
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: `dal-tab${view === 'compare' ? ' on' : ''}`,
+                      onClick: () => setView('compare'),
+                    },
+                    t('tabCompare'),
+                  ),
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: `dal-tab${view === 'matrix' ? ' on' : ''}`,
+                      onClick: () => setView('matrix'),
+                    },
+                    t('tabMatrix'),
+                  ),
+                ),
+                h(
                   'button',
                   {
                     type: 'button',
                     className: 'dal-btn',
                     onClick: () => {
                       setReloadToken((value) => value + 1)
+                      setMatrixToken((value) => value + 1)
                       void loadLibrary()
                     },
                     disabled: library.status === 'loading',
@@ -1491,7 +2701,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
               ),
             ),
             notice === null ? null : h('div', { className: `dal-banner ${notice.kind}` }, notice.text),
-            library.status === 'ready' && runs.length > 0
+            library.status === 'ready' && runs.length > 0 && view === 'compare'
               ? h(
                   'section',
                   { className: 'dal-pickers' },
@@ -1504,6 +2714,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
                     otherId: bId,
                     onPick: setAId,
                     onDelete: deleteRun,
+                    onReplay: openReplay,
                     pendingDelete,
                     setPendingDelete,
                     t,
@@ -1528,6 +2739,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
                     otherId: aId,
                     onPick: setBId,
                     onDelete: deleteRun,
+                    onReplay: openReplay,
                     pendingDelete,
                     setPendingDelete,
                     t,
@@ -1544,6 +2756,27 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
           ),
         ),
         importOpen ? h(ImportDialog, { onClose: () => setImportOpen(false), onCaptured, t }) : null,
+        replayRequest === null
+          ? null
+          : h(ReplayDialog, {
+              baseRun: replayRequest.run,
+              initialModel: replayRequest.model,
+              onClose: () => setReplayRequest(null),
+              onDone: (job) => void onReplayDone(job),
+              t,
+            }),
+        checksTask === null
+          ? null
+          : h(ChecksDialog, {
+              task: checksTask,
+              onClose: () => setChecksTask(null),
+              onSaved: () => {
+                setChecksTask(null)
+                setMatrixToken((value) => value + 1)
+                setNotice({ kind: '', text: t('checksSaved') })
+              },
+              t,
+            }),
       )
     }
 
