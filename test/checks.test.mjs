@@ -27,6 +27,16 @@ function reader(files) {
   }
 }
 
+/** @param {string[]} present */
+function statOf(present) {
+  return async (path) => {
+    const normalized = path.toLowerCase().replaceAll('/', '\\')
+    const found = present.some((candidate) => normalized.endsWith(candidate.toLowerCase().replaceAll('/', '\\')))
+    if (!found) throw Object.assign(new Error('missing'), { code: 'ENOENT' })
+    return { size: 1 }
+  }
+}
+
 test('normalization keeps known checks and rejects bad parameters', () => {
   assert.deepEqual(
     normalizeChecks([
@@ -130,4 +140,106 @@ test('final-contains reads the last assistant reply', async () => {
     checks: [{ type: 'final-contains', text: 'verified' }],
   })
   assert.equal(missing.passed, false)
+})
+
+test('tool assertions read the recorded trace', async () => {
+  const trace = [
+    {
+      name: 'pwsh',
+      args: { command: 'echo hi', description: 'run echo' },
+      argsRaw: '{"command":"echo hi","description":"run echo"}',
+    },
+    { name: 'read', args: { path: 'a.ts' }, argsRaw: '{"path":"a.ts"}' },
+  ]
+  const result = await evaluateRun({
+    run: run({ trace, stats: { toolCalls: 2, failures: 0, inputTokens: 1, outputTokens: 1 } }),
+    checks: [
+      { type: 'tool-called', name: 'pwsh' },
+      { type: 'tool-not-called', name: 'edit' },
+      { type: 'tool-args-contains', name: 'pwsh', text: 'echo hi' },
+      { type: 'tool-args-contains', name: 'pwsh', key: 'command', text: 'hi' },
+      { type: 'tool-args-contains', name: 'pwsh', key: 'description', text: 'nope' },
+      { type: 'tool-not-called', name: 'read' },
+    ],
+  })
+  assert.deepEqual(
+    result.results.slice(1).map((entry) => [entry.type, entry.ok]),
+    [
+      ['tool-called', true],
+      ['tool-not-called', true],
+      ['tool-args-contains', true],
+      ['tool-args-contains', true],
+      ['tool-args-contains', false],
+      ['tool-not-called', false],
+    ],
+  )
+})
+
+test('policy assertions compare the recorded sandbox and approval', async () => {
+  const record = run({ config: { sandboxMode: 'workspace-write', approvalPolicy: 'never' } })
+  const result = await evaluateRun({
+    run: record,
+    checks: [
+      { type: 'sandbox-mode-is', mode: 'workspace-write' },
+      { type: 'approval-policy-is', policy: 'never' },
+      { type: 'approval-policy-is', policy: 'ask' },
+      { type: 'sandbox-mode-is', mode: 'danger-full-access' },
+    ],
+  })
+  assert.deepEqual(
+    result.results.slice(1).map((entry) => entry.ok),
+    [true, true, false, false],
+  )
+})
+
+test('file existence checks stat inside the workspace', async () => {
+  const replayRun = run({ replay: { workspace: { dir: 'C:\\copies\\task-a' } } })
+  const result = await evaluateRun({
+    run: replayRun,
+    checks: [
+      { type: 'file-exists', path: 'out/result.txt' },
+      { type: 'file-not-exists', path: 'out/missing.txt' },
+      { type: 'file-exists', path: 'out/missing.txt' },
+    ],
+    statPath: statOf(['out/result.txt']),
+  })
+  assert.deepEqual(
+    result.results.slice(1).map((entry) => entry.ok),
+    [true, true, false],
+  )
+
+  const escape = await evaluateRun({
+    run: replayRun,
+    checks: [{ type: 'file-exists', path: '../secret.txt' }],
+    statPath: statOf(['secret.txt']),
+  })
+  assert.match(escape.results[1].detail, /escapes/u)
+
+  const noStat = await evaluateRun({
+    run: replayRun,
+    checks: [{ type: 'file-exists', path: 'a.txt' }],
+  })
+  assert.match(noStat.results[1].detail, /metadata is unavailable/u)
+})
+
+test('final-regex matches the final reply and validates its pattern', async () => {
+  const result = await evaluateRun({
+    run: run({ finalText: 'Done: 42 tests passed.' }),
+    checks: [
+      { type: 'final-regex', pattern: '\\d+ tests passed', flags: 'i' },
+      { type: 'final-regex', pattern: '^failed' },
+    ],
+  })
+  assert.deepEqual(
+    result.results.slice(1).map((entry) => entry.ok),
+    [true, false],
+  )
+
+  assert.throws(() => normalizeChecks([{ type: 'final-regex', pattern: '(' }]), /invalid regular expression/u)
+  assert.throws(() => normalizeChecks([{ type: 'final-regex', pattern: 'x', flags: 'g' }]), /flags may only/u)
+  assert.throws(() => normalizeChecks([{ type: 'sandbox-mode-is', mode: 'nope' }]), /mode must be/u)
+  assert.throws(() => normalizeChecks([{ type: 'approval-policy-is', policy: 'sometimes' }]), /policy must be/u)
+  assert.deepEqual(normalizeChecks([{ type: 'tool-args-contains', name: 'pwsh', text: 'x', key: '  ' }]), [
+    { type: 'tool-args-contains', name: 'pwsh', text: 'x' },
+  ])
 })

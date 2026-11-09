@@ -183,6 +183,35 @@ function createHandler(webCtx, { runsDir, storeDir, checksDir }) {
         return
       }
 
+      if (path === '/api/checks/preview' && req.method === 'POST') {
+        const body = await readJsonBody(req)
+        const runId = typeof body?.runId === 'string' ? body.runId.trim() : ''
+        if (!RUN_ID_PATTERN.test(runId)) {
+          respondJson(res, 400, { ok: false, error: 'invalid run id' })
+          return
+        }
+        const run = await readRun(runsDir, runId)
+        if (run === undefined) {
+          respondJson(res, 404, { ok: false, error: 'run not found' })
+          return
+        }
+        let checks
+        try {
+          checks = normalizeChecks(body?.checks)
+        } catch (error) {
+          respondJson(res, 400, { ok: false, error: errorMessage(error) })
+          return
+        }
+        const evaluation = await evaluateRun({
+          run,
+          checks,
+          readText: readUtf8,
+          statPath: (target) => stat(target),
+        })
+        respondJson(res, 200, { ok: true, passed: evaluation.passed, results: evaluation.results })
+        return
+      }
+
       if (path === '/api/replay' && req.method === 'GET') {
         const id = url.searchParams.get('id') ?? ''
         const job = replay.get(id)
@@ -789,6 +818,7 @@ async function readMatrix(runsDir, checksDir) {
       run,
       checks: checksByTask.get(taskKey) ?? [],
       readText: readUtf8,
+      statPath: (target) => stat(target),
     })
     if (checksErrors.has(taskKey)) {
       evaluation.results.push({ type: 'checks-error', ok: false, detail: checksErrors.get(taskKey) })

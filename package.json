@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-lab",
-  "version": "0.4.0",
+  "version": "0.5.0-alpha.1",
   "private": true,
   "description": "Agent 行为回归实验台：录制/重放会话运行，按任务×变体聚合矩阵，并用任务断言与 CI 退出码做回归门禁",
   "type": "module",

@@ -6,7 +6,7 @@
  * set, never contacts the Host, and exits nonzero when the run fails.
  */
 
-import { readFile, readdir } from 'node:fs/promises'
+import { readFile, readdir, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -134,6 +134,7 @@ async function gate(values, out, err) {
     run,
     checks,
     readText: (path) => readFile(path, 'utf8'),
+    statPath: (path) => stat(path),
   })
 
   if (values.json === true) {

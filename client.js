@@ -171,6 +171,24 @@ window.__ModuleLoader__.load({
       checkMax: '上限',
       checkNoToolHint: '要求这次运行没有调用任何工具。',
       replayDoneMatrix: '重放完成，矩阵已刷新。',
+      checkToolCalled: '调用工具',
+      checkToolNotCalled: '不调用工具',
+      checkToolArgsContains: '工具参数包含',
+      checkSandboxMode: '沙箱模式',
+      checkApprovalPolicy: '审批策略',
+      checkFileExists: '文件存在',
+      checkFileNotExists: '文件不存在',
+      checkFinalRegex: '最终回复匹配正则',
+      checkName: '工具名',
+      checkKey: '参数键（可选）',
+      checkPattern: '正则',
+      checkFlags: 'flags（可选 ims）',
+      checkMode: '模式',
+      checkPolicy: '策略',
+      checksPreview: '用运行预览',
+      checksPreviewAction: '运行预览',
+      checksPreviewPass: '通过',
+      checksPreviewFail: '未通过',
     }
 
     const EN = {
@@ -336,6 +354,24 @@ window.__ModuleLoader__.load({
       checkMax: 'Maximum',
       checkNoToolHint: 'Require that this run called no tool at all.',
       replayDoneMatrix: 'Replay finished; the matrix is refreshed.',
+      checkToolCalled: 'Tool called',
+      checkToolNotCalled: 'Tool not called',
+      checkToolArgsContains: 'Tool arguments contain',
+      checkSandboxMode: 'Sandbox mode',
+      checkApprovalPolicy: 'Approval policy',
+      checkFileExists: 'File exists',
+      checkFileNotExists: 'File does not exist',
+      checkFinalRegex: 'Final reply matches regex',
+      checkName: 'Tool name',
+      checkKey: 'Argument key (optional)',
+      checkPattern: 'Pattern',
+      checkFlags: 'Flags (optional: ims)',
+      checkMode: 'Mode',
+      checkPolicy: 'Policy',
+      checksPreview: 'Preview with a run',
+      checksPreviewAction: 'Run preview',
+      checksPreviewPass: 'passed',
+      checksPreviewFail: 'failed',
     }
 
     const STATUSES = ['same', 'args', 'result', 'flip', 'onlyA', 'onlyB']
@@ -569,6 +605,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
 .dal-check-field{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--dsw-alias-label-secondary);min-width:0}
 .dal-check-add{display:flex;gap:8px;align-items:center;padding-top:2px}
 .dal-check-add .dal-select{flex:1;min-width:0}
+.dal-preview{border-top:1px dashed var(--dsw-alias-border-l1);padding-top:9px;display:flex;flex-direction:column;gap:8px}
 .dal-run-row{border:1px solid var(--dsw-alias-border-l1);border-radius:10px;background:var(--dsw-alias-bg-layer-1);padding:9px 10px;display:flex;flex-direction:column;gap:5px}
 .dal-run-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .dal-run-head>div:first-child{display:flex;align-items:center;gap:8px;font-size:12px}
@@ -1670,11 +1707,19 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
 
     const CHECK_TYPE_KEYS = [
       ['no-tool', 'checkNoTool'],
+      ['tool-called', 'checkToolCalled'],
+      ['tool-not-called', 'checkToolNotCalled'],
+      ['tool-args-contains', 'checkToolArgsContains'],
       ['file-contains', 'checkFileContains'],
+      ['file-exists', 'checkFileExists'],
+      ['file-not-exists', 'checkFileNotExists'],
       ['final-contains', 'checkFinalContains'],
+      ['final-regex', 'checkFinalRegex'],
       ['max-tool-calls', 'checkMaxToolCalls'],
       ['max-total-tokens', 'checkMaxTokens'],
       ['max-failures', 'checkMaxFailures'],
+      ['sandbox-mode-is', 'checkSandboxMode'],
+      ['approval-policy-is', 'checkApprovalPolicy'],
     ]
 
     function checkLabel(type, t) {
@@ -1685,11 +1730,17 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
     }
 
     function emptyCheck(type) {
+      if (type === 'tool-called' || type === 'tool-not-called') return { type, name: '' }
+      if (type === 'tool-args-contains') return { type, name: '', text: '', key: '' }
       if (type === 'file-contains') return { type, path: '', text: '' }
+      if (type === 'file-exists' || type === 'file-not-exists') return { type, path: '' }
       if (type === 'final-contains') return { type, text: '' }
+      if (type === 'final-regex') return { type, pattern: '', flags: '' }
       if (type === 'max-tool-calls') return { type, max: 10 }
       if (type === 'max-total-tokens') return { type, max: 50000 }
       if (type === 'max-failures') return { type, max: 0 }
+      if (type === 'sandbox-mode-is') return { type, mode: 'workspace-write' }
+      if (type === 'approval-policy-is') return { type, policy: 'never' }
       return { type: 'no-tool' }
     }
 
@@ -1709,6 +1760,31 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
         if (check.type.startsWith('max-') && !(Number.isSafeInteger(check.max) && check.max >= 0)) {
           return t('checksInvalid')
         }
+        if (
+          (check.type === 'tool-called' || check.type === 'tool-not-called' || check.type === 'tool-args-contains') &&
+          String(check.name ?? '').trim() === ''
+        ) {
+          return t('checksInvalid')
+        }
+        if (check.type === 'tool-args-contains' && String(check.text ?? '').trim() === '') {
+          return t('checksInvalid')
+        }
+        if (
+          (check.type === 'file-exists' || check.type === 'file-not-exists') &&
+          String(check.path ?? '').trim() === ''
+        ) {
+          return t('checksInvalid')
+        }
+        if (check.type === 'final-regex') {
+          const pattern = String(check.pattern ?? '').trim()
+          const flags = String(check.flags ?? '').trim()
+          if (pattern === '' || !/^[ims]*$/u.test(flags)) return t('checksInvalid')
+          try {
+            new RegExp(pattern, flags)
+          } catch {
+            return t('checksInvalid')
+          }
+        }
       }
       return null
     }
@@ -1726,6 +1802,20 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
     function fmtAvg(value) {
       const number = Number(value) || 0
       return Number.isInteger(number) ? fmtInt(number) : number.toFixed(1)
+    }
+
+    /** Every distinct run of a task, newest first: preview candidates. */
+    function taskRuns(task) {
+      const seen = new Set()
+      const runs = []
+      for (const cell of Object.values(task?.cells ?? {})) {
+        for (const run of Array.isArray(cell?.runs) ? cell.runs : []) {
+          if (seen.has(run.id)) continue
+          seen.add(run.id)
+          runs.push(run)
+        }
+      }
+      return runs.sort((left, right) => (right.capturedAt ?? 0) - (left.capturedAt ?? 0))
     }
 
     function ResultLine({ result, t }) {
@@ -1933,6 +2023,7 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
                       h('b', {}, column.model),
                       h('small', {}, column.provider),
                       column.effort === null ? null : h('span', { className: 'dal-mini' }, column.effort),
+                      column.preset === 'default' ? null : h('span', { className: 'dal-mini' }, column.preset),
                     ),
                   ),
                 ),
@@ -2056,6 +2147,9 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
       const [addType, setAddType] = useState('no-tool')
       const [error, setError] = useState(null)
       const [busy, setBusy] = useState(false)
+      const previewRuns = useMemo(() => taskRuns(task), [task])
+      const [previewRunId, setPreviewRunId] = useState(() => previewRuns[0]?.id ?? null)
+      const [preview, setPreview] = useState({ status: 'idle' })
 
       useEffect(() => {
         const onKey = (event) => {
@@ -2065,9 +2159,14 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
         return () => document.removeEventListener('keydown', onKey)
       }, [onClose])
 
-      const update = (index, patch) =>
+      const update = (index, patch) => {
+        setPreview({ status: 'idle' })
         setChecks((current) => current.map((item, position) => (position === index ? { ...item, ...patch } : item)))
-      const remove = (index) => setChecks((current) => current.filter((_, position) => position !== index))
+      }
+      const remove = (index) => {
+        setPreview({ status: 'idle' })
+        setChecks((current) => current.filter((_, position) => position !== index))
+      }
 
       const save = async () => {
         if (busy) return
@@ -2087,12 +2186,48 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
         }
       }
 
+      const runPreview = async () => {
+        if (previewRunId === null || busy) return
+        const message = validateChecks(checks, t)
+        if (message !== null) {
+          setError(message)
+          return
+        }
+        setError(null)
+        setPreview({ status: 'loading' })
+        try {
+          const payload = await api('checks/preview', {
+            method: 'POST',
+            body: JSON.stringify({ runId: previewRunId, checks }),
+          })
+          setPreview({
+            status: 'ready',
+            passed: payload.passed === true,
+            results: Array.isArray(payload.results) ? payload.results : [],
+          })
+        } catch (previewError) {
+          setPreview({ status: 'error', error: previewError.message })
+        }
+      }
+
       const field = (label, value, onChange, type = 'text') =>
         h(
           'label',
           { className: 'dal-check-field' },
           h('span', {}, label),
           h('input', { className: 'dal-input', type, value: value ?? '', onChange }),
+        )
+
+      const selectField = (label, value, options, onChange) =>
+        h(
+          'label',
+          { className: 'dal-check-field' },
+          h('span', {}, label),
+          h(
+            'select',
+            { className: 'dal-select', value, onChange },
+            options.map(([optionValue, optionLabel]) => h('option', { key: optionValue, value: optionValue }, optionLabel)),
+          ),
         )
 
       const renderRow = (check, index) =>
@@ -2116,6 +2251,52 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
             ),
           ),
           check.type === 'no-tool' ? h('div', { className: 'dal-hint' }, t('checkNoToolHint')) : null,
+          check.type === 'tool-called' || check.type === 'tool-not-called'
+            ? field(t('checkName'), check.name, (event) => update(index, { name: event.target.value }))
+            : null,
+          check.type === 'tool-args-contains'
+            ? h(
+                'div',
+                { className: 'dal-check-fields' },
+                field(t('checkName'), check.name, (event) => update(index, { name: event.target.value })),
+                field(t('checkKey'), check.key, (event) => update(index, { key: event.target.value })),
+                field(t('checkText'), check.text, (event) => update(index, { text: event.target.value })),
+              )
+            : null,
+          check.type === 'file-exists' || check.type === 'file-not-exists'
+            ? field(t('checkPath'), check.path, (event) => update(index, { path: event.target.value }))
+            : null,
+          check.type === 'final-regex'
+            ? h(
+                'div',
+                { className: 'dal-check-fields' },
+                field(t('checkPattern'), check.pattern, (event) => update(index, { pattern: event.target.value })),
+                field(t('checkFlags'), check.flags, (event) => update(index, { flags: event.target.value })),
+              )
+            : null,
+          check.type === 'sandbox-mode-is'
+            ? selectField(
+                t('checkMode'),
+                check.mode,
+                [
+                  ['read-only', 'read-only'],
+                  ['workspace-write', 'workspace-write'],
+                  ['danger-full-access', 'danger-full-access'],
+                ],
+                (event) => update(index, { mode: event.target.value }),
+              )
+            : null,
+          check.type === 'approval-policy-is'
+            ? selectField(
+                t('checkPolicy'),
+                check.policy,
+                [
+                  ['ask', 'ask'],
+                  ['never', 'never'],
+                ],
+                (event) => update(index, { policy: event.target.value }),
+              )
+            : null,
           check.type === 'file-contains'
             ? h(
                 'div',
@@ -2197,11 +2378,72 @@ pre.dal-pre.empty{color:var(--dsw-alias-label-secondary);font-family:inherit;fon
                 {
                   type: 'button',
                   className: 'dal-btn sm',
-                  onClick: () => setChecks((current) => [...current, emptyCheck(addType)]),
+                  onClick: () => {
+                    setPreview({ status: 'idle' })
+                    setChecks((current) => [...current, emptyCheck(addType)])
+                  },
                 },
                 t('checksAdd'),
               ),
             ),
+            previewRuns.length === 0
+              ? null
+              : h(
+                  'div',
+                  { className: 'dal-preview' },
+                  h('div', { className: 'dal-check-head' }, h('b', {}, t('checksPreview'))),
+                  h(
+                    'div',
+                    { className: 'dal-check-add' },
+                    h(
+                      'select',
+                      {
+                        className: 'dal-select',
+                        value: previewRunId ?? '',
+                        'aria-label': t('checksPreview'),
+                        onChange: (event) => {
+                          setPreview({ status: 'idle' })
+                          setPreviewRunId(event.target.value)
+                        },
+                      },
+                      previewRuns.map((run) =>
+                        h(
+                          'option',
+                          { key: run.id, value: run.id },
+                          `${fmtWhen(run.capturedAt)} · ${run.title || run.id}`,
+                        ),
+                      ),
+                    ),
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'dal-btn sm',
+                        onClick: () => void runPreview(),
+                        disabled: busy || preview.status === 'loading',
+                      },
+                      t('checksPreviewAction'),
+                    ),
+                  ),
+                  preview.status === 'loading'
+                    ? h('div', { className: 'dal-loading' }, h(Spinner, {}), t('loading'))
+                    : null,
+                  preview.status === 'error'
+                    ? h('div', { className: 'dal-banner error' }, preview.error)
+                    : null,
+                  preview.status === 'ready'
+                    ? h(
+                        'div',
+                        { className: 'dal-checks' },
+                        h(
+                          'span',
+                          { className: `dal-badge ${preview.passed ? 'pass' : 'fail'}` },
+                          preview.passed ? t('checksPreviewPass') : t('checksPreviewFail'),
+                        ),
+                        preview.results.map((result, index) => h(ResultLine, { key: index, result, t })),
+                      )
+                    : null,
+                ),
             error === null ? null : h('div', { className: 'dal-banner error' }, error),
           ),
           h(

@@ -56,7 +56,7 @@
 切到 **矩阵** 页签：
 
 - **行**是任务：按归一化后的任务提示词分组，任务键形如 `task-1a2b3c4d5e6f`；
-- **列**是变体：provider / model / reasoningEffort；
+- **列**是变体：provider / model / reasoningEffort / agent preset；
 - **单元格**：通过率、平均工具调用数、平均 Token。点开可看这个组合的每一次运行、断言结果，并挑两次设为 A/B 回到对比页。
 
 没有断言的单元格按「这一轮正常结束」判定通过；有断言时，必须「正常结束 + 所有断言通过」。空单元格可以直接「重放这个变体」：任务提示词与工作区来自该任务最近一次**导入**的运行（没有导入运行时退回最近一次重放），模型预填为该列变体。
@@ -75,8 +75,17 @@
 | `max-tool-calls` | `max` | 工具调用数不超过上限 |
 | `max-total-tokens` | `max` | 输入 + 输出 Token 不超过上限 |
 | `max-failures` | `max` | 失败工具调用数不超过上限 |
+| `tool-called` | `name` | 至少一次调用该工具 |
+| `tool-not-called` | `name` | 完全没有调用该工具 |
+| `tool-args-contains` | `name`, `text`, `key?` | 至少一次该工具调用的参数包含文本 |
+| `sandbox-mode-is` | `mode` | 运行的沙箱模式等于指定值 |
+| `approval-policy-is` | `policy` | 运行的审批策略等于指定值 |
+| `file-exists` / `file-not-exists` | `path` | 工作区存在 / 不存在该文件 |
+| `final-regex` | `pattern`, `flags?` | 最终回复匹配正则（flags 仅 `ims`） |
 
 `file-contains` 对重放运行读**副本目录**，对导入运行读会话当前工作目录；路径必须留在工作区内。
+
+矩阵里的断言编辑器支持用一条**已知坏 run** 预览当前编辑中的断言：只求值、不保存，用来确认「这条断言真的会失败」。
 
 ### CI 门禁
 
@@ -85,11 +94,13 @@
 node bin/agent-lab-check.mjs --run run-xxxxxxxx
 
 # 或者跑某个任务某个变体的最新运行
-node bin/agent-lab-check.mjs --task task-1a2b3c4d5e6f --variant deepseek-account/deepseek-flash@high
+node bin/agent-lab-check.mjs --task task-1a2b3c4d5e6f --variant 'deepseek-account/deepseek-flash@high#<preset>'
 
 # 机器可读，适合 CI 日志
 node bin/agent-lab-check.mjs --run run-xxxxxxxx --json
 ```
+
+变体键是 `provider/model@effort#preset`（v0.5 起）。旧运行读取时自动重键，不需要迁移。
 
 退出码：`0` 通过、`1` 断言失败、`2` 用法或存储错误。默认读 `$DSH_HOME/agent-lab/{runs,checks}`，可用 `--runs-dir` / `--checks-dir` 覆盖，`--checks <file>` 直接指定一份断言 JSON。
 
@@ -131,7 +142,7 @@ GitHub Actions 里可以直接：
 | `test/compare.test.mjs` | 对齐与采集的单元测试 |
 | `test/replay.test.mjs` | 重放计划与进度判定的单元测试 |
 | `test/matrix.test.mjs` | 任务/变体键与矩阵聚合的单元测试 |
-| `test/checks.test.mjs` | 断言规范化与六种断言求值的单元测试 |
+| `test/checks.test.mjs` | 断言规范化与深断言求值的单元测试 |
 | `test/check-cli.test.mjs` | CLI 退出码、任务/变体选择与文件断言的单元测试 |
 
 数据来源：
@@ -164,5 +175,6 @@ Host 代码改动在下次 profile 重组（Plugin Manager 里关闭再开启该
 |---|---|
 | v0.1 | 录制、并排对比、配置指纹、启发式相似度 |
 | v0.2 | 夹具重放：复制工作区、换模型/提示词重跑，自动生成对照运行 |
-| v0.3（本版） | 变体矩阵：行是任务、列是变体，单元格是通过率 / 调用数 / Token |
-| v0.4（本版） | 断言与门禁：`no-tool`、`file-contains`、阈值回归，输出退出码给 CI |
+| v0.3 | 变体矩阵：行是任务、列是变体，单元格是通过率 / 调用数 / Token |
+| v0.4 | 断言与门禁：`no-tool`、`file-contains`、阈值回归，输出退出码给 CI |
+| v0.5（开发中） | 深断言、固定夹具、批量 × 重复 × 预算；设计见 [docs/v0.5-design.md](docs/v0.5-design.md) |

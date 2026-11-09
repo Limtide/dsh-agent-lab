@@ -32,13 +32,16 @@ test('task keys are stable across line endings and surrounding space', () => {
   assert.equal(normalizePrompt('a\r\nb'), 'a\nb')
 })
 
-test('variant keys separate provider, model, and effort', () => {
+test('variant keys separate provider, model, effort, and preset', () => {
   const plain = variantOf({ provider: 'p', model: 'm' })
   const high = variantOf({ provider: 'p', model: 'm', reasoningEffort: 'high' })
-  assert.equal(plain.key, 'p/m@default')
-  assert.equal(high.key, 'p/m@high')
+  const preset = variantOf({ provider: 'p', model: 'm', reasoningEffort: 'high', agentPreset: 'cordis' })
+  assert.equal(plain.key, 'p/m@default#default')
+  assert.equal(high.key, 'p/m@high#default')
+  assert.equal(preset.key, 'p/m@high#cordis')
   assert.equal(plain.effort, null)
   assert.equal(high.effort, 'high')
+  assert.equal(preset.preset, 'cordis')
 })
 
 test('the matrix groups runs by task and variant with pass rates', () => {
@@ -64,7 +67,7 @@ test('the matrix groups runs by task and variant with pass rates', () => {
   )
 
   const alpha = matrix.tasks.find((task) => task.title === 'task alpha')
-  const flashCell = alpha.cells[variantOf({ provider: 'deepseek-account', model: 'deepseek-flash' }).key]
+  const flashCell = alpha.cells[variantOf({ provider: 'deepseek-account', model: 'deepseek-flash', agentPreset: 'standard' }).key]
   assert.equal(flashCell.total, 2)
   assert.equal(flashCell.passCount, 1)
   assert.equal(flashCell.avgToolCalls, 3)
@@ -74,7 +77,7 @@ test('the matrix groups runs by task and variant with pass rates', () => {
     ['r2', 'r1'],
   )
 
-  const proCell = alpha.cells['deepseek-account/deepseek-pro@default']
+  const proCell = alpha.cells['deepseek-account/deepseek-pro@default#standard']
   assert.equal(proCell.passCount, 1)
   assert.equal(alpha.replayBase.id, 'r3')
   assert.equal(alpha.replayBase.prompt, 'task alpha')
@@ -95,6 +98,16 @@ test('checks and check errors are attached to their task', () => {
   })
   assert.deepEqual(matrix.tasks[0].checks, checks)
   assert.equal(matrix.tasks[0].checksError, 'checks file is corrupt')
+})
+
+test('different presets are different columns', () => {
+  const standard = run('r1', 'task alpha', { at: 1_000 })
+  const cordis = run('r2', 'task alpha', { at: 2_000 })
+  cordis.config.agentPreset = 'cordis'
+  const matrix = buildMatrix([standard, cordis])
+  assert.equal(matrix.columns.length, 2)
+  assert.notEqual(matrix.columns[0].key, matrix.columns[1].key)
+  assert.equal(matrix.columns.filter((column) => column.preset === 'cordis').length, 1)
 })
 
 test('a task replays from its imported run, not from another replay copy', () => {

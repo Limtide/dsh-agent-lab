@@ -142,7 +142,7 @@ test('--task and --variant pick the latest run of that cell', async (t) => {
       '--task',
       taskKey,
       '--variant',
-      'deepseek-account/deepseek-flash@high',
+      'deepseek-account/deepseek-flash@high#default',
       '--runs-dir',
       runsDir,
       '--checks-dir',
@@ -179,7 +179,7 @@ test('usage and store problems exit 2 without claiming a pass', async (t) => {
     2,
   )
   assert.equal(
-    await main(['--task', 'task-000000000000', '--variant', 'p/m@default', '--runs-dir', runsDir, '--checks-dir', checksDir], capture().io),
+    await main(['--task', 'task-000000000000', '--variant', 'p/m@default#default', '--runs-dir', runsDir, '--checks-dir', checksDir], capture().io),
     2,
   )
 
